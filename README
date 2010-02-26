@@ -1,0 +1,91 @@
+Simple Config class module.
+
+Released into the Public Domain.
+
+This module defines a simple, but very powerful config file 
+reader/writer. Though not quite as poweful as YAML, this uses
+simpler config files that are human readable and editable.
+Config files consist of 'key = value' pairs, with the special 
+exception of keys that start with an '*' symbol; keys of this 
+sort have their values added to an array under that key name. 
+
+The Config class is a sub-class of the Hash class, so 
+inherits all of it's methods.
+
+Example config:
+server = my.server.com
+port = 8080
+*plugin = plugin1
+*plugin = plugin2
+
+Comments in the config file start with a # and go to the end 
+of the line.
+
+Values of "true", "yes", and "on" are converted to boolean 
+true. Values of "false", "no", and "off" are converted to
+boolean false values. Values of "nil", "null", "none" are
+converted to nil values. The reverse of these values will be
+saved as "true", "false", and "null" respectively.
+
+The Config class, when given the config file, will read and 
+parse the file and presents several static and dynamic
+methods for getting and setting data values.
+
+To instantiate a Config instance:
+
+  require "config"
+  conf = Config::Config.new(config_file_path)
+
+The new() method takes a second, optional argument, which if
+it is false, will -not- read the file upon object creation. A
+later called to the read() method will then read the file; the 
+default is for the file to be read and parsed when the object
+is created.
+
+Values can be read using the following ways:
+
+get(key[, value]) -- which takes the key name, and a second, 
+optional default value if the key name is not set.
+  conf.get("key_name")
+  conf.get("key_name", "default value")
+
+[key] -- simply takes the key name; if there is no value for the
+key, then nil is returned.
+  conf["key_name"]
+
+<key_name>() -- the key name can be used as a method name to
+obtain the value, and if given an argument, it becomes the
+default value if there is no value for the given key. If no
+argument is given, and the key does not exist, nil is returned.
+ conf.key_name()
+ conf.key_name("default value")
+
+Values can be written using the following ways:
+
+set(key, value) -- sets the key to value.
+
+[key] = value  -- ...does likewise.
+
+set_<key_name>(value) -- Sets the key to value.
+
+Examples:
+
+ conf.get("server", "localhost")
+ conf["server"]
+ conf.server()
+ conf.server("localhost")
+ conf.set("server", "new.server.com")
+ conf["server"] = "new.server.com")
+ conf.set_server("new.server.com")
+
+You can use save() to write the current config object back to
+the given file.
+
+Calling dump() dumps the config to stdout in a nice, but config
+file incompatible, way.
+
+You can set a new file to save to using new_file(filename), and
+if given a second, optional argument of true, will save the file
+right away, otherwise, you will have to invoke the save() method
+manually. Default is to -not- save the file when called. This 
+method returns the old config filename.
